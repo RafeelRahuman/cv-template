@@ -30,7 +30,7 @@ function Resume({ generalData, educationData, experienceData }) {
         {/* HEADER */}
         <div className="bg-slate-800 text-white text-center py-6 px-4">
           <h1 className="text-2xl sm:text-3xl font-bold">
-            {generalData.fullName || "Your Name"}
+            {generalData.fullName}
           </h1>
 
 
