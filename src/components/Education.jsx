@@ -1,205 +1,184 @@
 import { useState } from "react";
+import {
+  FaChevronDown,
+  FaChevronUp,
+  FaEdit,
+  FaGraduationCap,
+  FaTrash,
+} from "react-icons/fa";
 
+function Education({ setData, data }) {
+  const emptyForm = {
+    degree: "",
+    school: "",
+    city: "",
+    country: "",
+    startDate: "",
+    endDate: "",
+  };
 
-function Education({ setData,data }) {
+  const [formData, setFormData] = useState(emptyForm);
+  const [editIndex, setEditIndex] = useState(null);
+  const [open, setOpen] = useState(false);
 
-   const[isEditing,setIsEditing] = useState(true);
-    const [open, setOpen] = useState(false);
-
-
-  function handleChange(index, e) {
-    const newData = [...data];
-    newData[index][e.target.name] = e.target.value;
-    setData(newData);
+  function handleChange(e) {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   }
 
-  function addEducation(){
-    setData([
-        ...data,
-        {
-            degree: "",
-            school: "",
-            city: "",
-            country: "",
-            startDate: "",
-            endDate: "",
-        },  
-    ]);
+  function handleSave() {
+    if (editIndex !== null) {
+      const updated = [...data];
+      updated[editIndex] = formData;
+      setData(updated);
+      setEditIndex(null);
+    } else {
+      setData([...data, formData]);
+    }
+
+    setFormData(emptyForm);
+    setOpen(false);
   }
 
-  function deleteEducation() {
-    const newData = data.filter((_ , i) => i !==index);
-    setData(newData);
+  function handleEdit(index) {
+    setFormData(data[index]);
+    setEditIndex(index);
+    setOpen(true);
   }
 
+  function handleDelete(index) {
+    const updated = data.filter((_, i) => i !== index);
+    setData(updated);
+  }
 
   return (
-    <div className="card">
-    <div
-        className="card-header"
+    <div className="bg-white p-6 rounded-2xl shadow mb-6">
+
+      {/* HEADER */}
+      <div
+        className="flex justify-between items-center cursor-pointer"
         onClick={() => setOpen(!open)}
       >
-        <h2>👤 Education </h2>
+        <div className="flex items-center gap-2">
+          <FaGraduationCap className="text-pink-500" size={20} />
+          <h2 className="text-lg font-semibold">Education</h2>
+        </div>
 
-        <span className="arrow">
-          {open ? "▲" : "▼"}
-        </span>
+        {open ? <FaChevronUp /> : <FaChevronDown />}
       </div>
 
-    {open && (
-    <>
+      {/* FORM */}
+      {open && (
+        <div className="mt-4 space-y-4">
 
-      {isEditing ? (
-        <>
-          {data.map((item, index) => (
-            <div key={index}>
-              <label>Degree</label>
-                <input
-                    type="text"
-                    name="degree"
-                    value={item.degree}
-                    onChange={(e) => handleChange(index, e)}
-                />
+          <input
+            type="text"
+            name="degree"
+            value={formData.degree}
+            onChange={handleChange}
+            placeholder="Degree"
+            className="w-full p-3 rounded-lg bg-gray-100"
+          />
 
-                <label>School</label>
-                <input
-                    type="text"
-                    name="school"
-                    value={item.school}
-                    onChange={(e) => handleChange(index, e)}
-                />
+          <input
+            type="text"
+            name="school"
+            value={formData.school}
+            onChange={handleChange}
+            placeholder="School"
+            className="w-full p-3 rounded-lg bg-gray-100"
+          />
 
-                <div className="two-col">
-                    <div>
-                    <label>City</label>
-                    <input
-                        type="text"
-                        name="city"
-                        value={item.city}
-                        onChange={(e) => handleChange(index, e)}
-                    />
-                    </div>
+          {/* City + Country */}
+          <div className="flex gap-4">
+            <input
+              type="text"
+              name="city"
+              value={formData.city}
+              onChange={handleChange}
+              placeholder="City"
+              className="w-1/2 p-3 rounded-lg bg-gray-100"
+            />
 
-                    <div>
-                    <label>Country</label>
-                    <input
-                        type="text"
-                        name="country"
-                        value={item.country}
-                        onChange={(e) => handleChange(index, e)}
-                    />
-                    </div>
-                </div>
-
-                <div className="two-col">
-                    <div>
-                    <label>Start Date</label>
-                    <input
-                        type="date"
-                        name="startDate"
-                        value={item.startDate}
-                        onChange={(e) => handleChange(index, e)}
-                    />
-                    </div>
-
-                    <div>
-                    <label>End Date</label>
-                    <input
-                        type="date"
-                        name="endDate"
-                        value={item.endDate}
-                        onChange={(e) => handleChange(index, e)}
-                    />
-            </div>
+            <input
+              type="text"
+              name="country"
+              value={formData.country}
+              onChange={handleChange}
+              placeholder="Country"
+              className="w-1/2 p-3 rounded-lg bg-gray-100"
+            />
           </div>
-          <button onClick={() => deleteEducation(index)}>
-            Delete
-          </button>
 
-          <hr style={{ margin: "20px 0" }} />
+          {/* Dates */}
+          <div className="flex gap-4">
+            <input
+              type="date"
+              name="startDate"
+              value={formData.startDate}
+              onChange={handleChange}
+              className="w-1/2 p-3 rounded-lg bg-gray-100"
+            />
+
+            <input
+              type="date"
+              name="endDate"
+              value={formData.endDate}
+              onChange={handleChange}
+              className="w-1/2 p-3 rounded-lg bg-gray-100"
+            />
+          </div>
+
+          {/* SAVE */}
+          <button
+            onClick={handleSave}
+            className="bg-pink-500 text-white px-6 py-2 rounded-full hover:bg-pink-600"
+          >
+            {editIndex !== null ? "Update" : "Save"}
+          </button>
         </div>
-          ))}
-
-          <button className="add-btn" onClick={addEducation}>
-        + Education
-      </button>
-      <button onClick={()=> setIsEditing(false)}>Save</button>
-    </>
-  ): (
-    <>
-          {data.map((item, index) => (
-            <div key={index}>
-              <p><strong>{item.degree}</strong></p>
-              <p>{item.school}</p>
-              <p>{item.city}, {item.country}</p>
-              <p>{item.startDate} - {item.endDate}</p>
-
-              <hr style={{ margin: "20px 0" }} />
-            </div>
-          ))}
-
-          <button onClick={() => setIsEditing(true)}>
-            Edit
-          </button>
-        </>
       )}
-      </>
-    )}
+
+      {/* SAVED LIST */}
+      {data.map((item, index) => (
+        <div
+          key={index}
+          className="mt-4 p-4 bg-gray-50 rounded-lg flex justify-between items-start"
+        >
+          <div>
+            <p className="font-semibold text-gray-800">
+              {item.degree}
+            </p>
+            <p className="text-gray-600">{item.school}</p>
+            <p className="text-sm text-gray-500">
+              {item.city}, {item.country}
+            </p>
+            <p className="text-sm text-gray-500">
+              {item.startDate} - {item.endDate}
+            </p>
+          </div>
+
+          <div className="flex gap-3">
+            <button
+              onClick={() => handleEdit(index)}
+              className="text-blue-500 hover:text-blue-700"
+            >
+              <FaEdit />
+            </button>
+
+            <button
+              onClick={() => handleDelete(index)}
+              className="text-red-500 hover:text-red-700"
+            >
+              <FaTrash />
+            </button>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
+
 export default Education;
-
-
-// function Education ({setData,data}) {
-// const[schoolName,setSchoolName] = useState(data.schoolName || "");
-// const[degreeTitle,setDegreeTitle] = useState(data.degreeTitle || "");
-// const[date,setDate] = useState("");
-
-// const[isEditing,setIsEditing] = useState(true);
-
-// function handleSchoolNameChange(e){
-//     setSchoolName(e.target.value)
-// }
-
-// function handleDegreeTitleChange(e){
-//     setDegreeTitle(e.target.value)
-// }
-
-// function handleDateChange(e){
-//     setDate(e.target.value)
-// }
-
-// return (
-//     <div>
-//         <h1>Education Information</h1>
-//         {isEditing ? (
-//             <div>
-//                 <label>School Name</label>
-//                 <input type="text" value={schoolName} onChange ={handleSchoolNameChange}  />
-
-//                 <label > Degree Title</label>
-//                 <input type="text" value={degreeTitle} onChange={handleDegreeTitleChange} />
-
-//                 <label> Date </label>
-//                 <input type="date" value={date} onChange={handleDateChange} />
-//                 <button onClick={() => {
-//                     setData({schoolName,degreeTitle,date})
-//                     setIsEditing(false)}}>Submit</button>
-
-//             </div>
-//            ): (
-//             <div>
-//                 <p>{schoolName}</p>
-//                 <p>{degreeTitle}</p>
-//                 <p>{date}</p>
-
-//                 <button onClick={()=>setIsEditing(true)}>Edit</button>
-                
-//             </div>
-//            )} 
-        
-//     </div>
-// );
-// }
-

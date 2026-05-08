@@ -1,111 +1,128 @@
-import "../styles/Resume.css"
+import { FaEnvelope, FaPhone, FaMapMarkerAlt } from "react-icons/fa";
 
-function formatDate (date) {
-    if (!date) return "";
+function formatDate(date) {
+  if (!date) return "";
 
-    const d = new Date(date);
+  const d = new Date(date);
 
-    return d.toLocaleDateString("en-US",{
-        month : "short",
-        year : "numeric",
-    });
+  return d.toLocaleDateString("en-US", {
+    month: "short",
+    year: "numeric",
+  });
 }
 
-function Resume ({generalData,educationData,experienceData}){  
+function Resume({ generalData, educationData, experienceData }) {
+  return (
+<div className="w-full flex justify-center">
 
-    return (
+      {/* A4 CONTAINER */}
+      <div
+        id="resume-download"
+        className="
+  bg-white shadow-lg
+  w-full
+  max-w-[210mm]
+  h-[296mm]
+  mx-auto
+  overflow-hidden
+"
+      >
+        {/* HEADER */}
+        <div className="bg-slate-800 text-white text-center py-6 px-4">
+          <h1 className="text-2xl sm:text-3xl font-bold">
+            {generalData.fullName || "Your Name"}
+          </h1>
 
-        <div id="resume-download">
 
-        <div className="resume">
+<div className="flex flex-wrap justify-center gap-4 mt-2 text-sm">
+  
+   {generalData.email && (
+    <div className="flex items-center gap-2">
+      <span>✉</span>
+      <span>{generalData.email}</span>
+    </div>
+  )}
 
-            <div  className="resume-header">
+  {generalData.phone && (
+    <div className="flex items-center gap-2">
+      <span>☎</span>
+      <span>{generalData.phone}</span>
+    </div>
+  )}
 
-            <h1>{generalData.fullName} </h1>
+  {generalData.city && (
+    <div className="flex items-center gap-2">
+      <span>📍</span>
+      <span>{generalData.city}</span>
+    </div>
+  )}
+</div>
+        </div>
 
-            <div className="contact">
-            <span>{generalData.email}</span>
-            <span>{generalData.phone}</span>
-            <span>{generalData.city}</span>
+        {/* BODY */}
+        <div className="p-4 sm:p-6">
+
+          {/* EDUCATION */}
+          {educationData.length > 0 && (
+            <div className="mb-6">
+              <h2 className="bg-gray-200 px-4 py-2 font-semibold text-lg text-center">
+                Education
+              </h2>
+
+              {educationData.map((edu, index) => (
+                <div
+                  key={index}
+                  className="mt-4 flex flex-col sm:flex-row gap-4"
+                >
+                  {/* LEFT */}
+                  <div className="sm:w-1/3 text-sm text-gray-500">
+                    {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
+                    <br />
+                    {edu.city}, {edu.country}
+                  </div>
+
+                  {/* RIGHT */}
+                  <div className="sm:w-2/3">
+                    <h3 className="font-semibold">{edu.school}</h3>
+                    <p>{edu.degree}</p>
+                  </div>
+                </div>
+              ))}
             </div>
+          )}
+
+          {/* EXPERIENCE */}
+          {experienceData.length > 0 && (
+            <div>
+              <h2 className="bg-gray-200 px-4 py-2 font-semibold text-lg text-center">
+                Professional Experience
+              </h2>
+
+              {experienceData.map((exp, index) => (
+                <div
+                  key={index}
+                  className="mt-4 flex flex-col sm:flex-row gap-4"
+                >
+                  {/* LEFT */}
+                  <div className="sm:w-1/3 text-sm text-gray-500">
+                    {formatDate(exp.startDate)} - {formatDate(exp.endDate)}
+                  </div>
+
+                  {/* RIGHT */}
+                  <div className="sm:w-2/3">
+                    <h3 className="font-semibold">{exp.company}</h3>
+                    <p className="text-sm">{exp.jobTitle}</p>
+                    <p className="text-sm mt-1">{exp.description}</p>
+                  </div>
+                </div>
+              ))}
             </div>
+          )}
 
-
-<div className="resume-selection">
-
-{educationData.some(
-    item => item.degree || item.school
-) && (
-    <h2 className="resume-title"> Education </h2>
-)}
-
-{educationData.map((item, index) => (
-  <div key={index} className="resume-item">
-    <div className="left-side">
-        {formatDate(item.startDate)} - {formatDate(item.endDate)}
+        </div>
+      </div>
     </div>
-
-    <div className="right-side">
-      <h3>{item.degree}</h3>
-      <p>{item.school}</p>
-      <p>{item.city}, {item.country}
-      </p>
-    </div>
-  </div>
-))}
-</div>
-
-<div className="resume-selection">
-
-{experienceData.some (
-    item => item.jobTitle || item.company 
-) && (
-    <h2 className="resume-title">Professional Experience</h2>
-)}
-
-{experienceData.map((item,index) =>(
-<div key={index} className="resume-item">
-    <div className="left-side">
-        <p>{formatDate(item.fromDate)} - {formatDate(item.toDate)}</p>
-    </div>
-
-    <div className="right-side">   
-        <h3>{item.jobTitle}</h3>
-        <p>{item.company}</p>
-        <p>{item.description}</p>
-    </div>
-</div>
-))}
-</div>
-</div>
-</div>
-    );
+  );
 }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
 
 export default Resume;
-
-            {/* <div className="resume-section">
-            <h2>Education Details</h2>
-            <div className="resume-item">
-            <p>{educationData.date}</p>
-            <div>
-            <h3>{educationData.schoolName}</h3>
-            <p>{educationData.degreeTitle}</p>
-            </div>
-            </div>
-            </div> */}
-
-            {/* <div className="resume-section">
-            <h2>Professional Experience</h2>
-            <div className="resume-item">
-            <p>{experienceData.fromDate} - {experienceData.toDate}</p>
-            <div>
-            <h3>{experienceData.companyName}</h3>
-            <p>{experienceData.position}</p>
-            <p>{experienceData.responsibility}</p>
-            </div>
-            </div>      
-            </div> */}
- 
-           

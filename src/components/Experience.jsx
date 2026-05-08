@@ -1,204 +1,171 @@
 import { useState } from "react";
-import { FaPlus, FaTrash } from "react-icons/fa";
+import {
+  FaChevronDown,
+  FaChevronUp,
+  FaEdit,
+  FaBriefcase,
+  FaTrash,
+} from "react-icons/fa";
 
-function Experience({setData,data}) {
-    
+function Experience({ setData, data }) {
+  const emptyForm = {
+    jobTitle: "",
+    company: "",
+    startDate: "",
+    endDate: "",
+    description: "",
+  };
 
-    const[isEditing,setIsEditing] = useState(true);
-    const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState(emptyForm);
+  const [open, setOpen] = useState(false);
+  const [editIndex, setEditIndex] = useState(null);
 
+  function handleChange(e) {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  }
 
-    function handleChange (index,e){
-        const newData = [...data];
-        newData[index][e.target.name] = e.target.value;
-        setData(newData);
+  function handleSave() {
+    if (editIndex !== null) {
+      const updated = [...data];
+      updated[editIndex] = formData;
+      setData(updated);
+      setEditIndex(null);
+    } else {
+      setData([...data, formData]);
     }
 
-    function addExperience (){
-        setData([
-            ...data,
-            {
-                jobTitle: "",
-                company: "",
-                startDate: "",
-                endDate: "",
-                description: "",
-            }
-        ])
-    }
+    setFormData(emptyForm);
+    setOpen(false);
+  }
 
-    function deleteExperience(index) {
-        const newData = data.filter((_,i) => i !== index);
-        setData(newData);
+  function handleEdit(index) {
+    setFormData(data[index]);
+    setEditIndex(index);
+    setOpen(true);
+  }
 
-    }
+  function handleDelete(index) {
+    const updated = data.filter((_, i) => i !== index);
+    setData(updated);
+  }
 
-    return (
-        <div className="card">
-    <div
-        className="card-header"
+  return (
+    <div className="bg-white p-6 rounded-2xl shadow mb-6">
+
+      {/* HEADER */}
+      <div
+        className="flex justify-between items-center cursor-pointer"
         onClick={() => setOpen(!open)}
       >
-        <h2>👤 Professional </h2>
+        <div className="flex items-center gap-2">
+          <FaBriefcase className="text-pink-500" size={20} />
+          <h2 className="text-lg font-semibold">
+            Professional Experience
+          </h2>
+        </div>
 
-        <span className="arrow">
-          {open ? "▲" : "▼"}
-        </span>
+        {open ? <FaChevronUp /> : <FaChevronDown />}
       </div>
 
-    {open && (
-    <>
-        
-            {isEditing ? (
-                <>
-                    {data.map((item,index) => (
-                        <div key={index}>
-                            <label>Job Title</label>
-                            <input 
-                            type="text"
-                            name="jobTitle"
-                            value={item.jobTitle}
-                            onChange={(e)=> handleChange(index,e)}
-                            placeholder="Job Title" 
-                            />
-                            <label>Company</label>
-                            <input 
-                            type="text"
-                            name="company"
-                            value={item.position}
-                            onChange={(e) => handleChange(index,e)}
-                            placeholder="Company Name" 
-                            />
-                            <label>Start Date</label>
-                            <input 
-                            type="date"
-                            name="startDate"
-                            value={item.startDate}
-                            onChange={(e) => handleChange(index,e)}
-                            />
-                            <label>End Date</label>
-                            <input type="date"
-                            name="endDate"
-                            value={item.endDate}
-                            onChange={(e) => handleChange(index,e)}
-                            />
-                            <label>Description</label>
-                            <textarea
-                            name="description"
-                            value={item.description}
-                            onChange={(e) => handleChange(index,e)}
-                            />
-                            <button onClick={()=> deleteExperience(index)}>
-                            <FaTrash />
-                            </button>
-                            <hr style={{margin : "20px 0"}} />
-                        </div>
-                    ))}
+      {/* FORM */}
+      {open && (
+        <div className="mt-4 space-y-4">
 
-                    <button className="add-btn"  onClick={addExperience}>
-                        <FaPlus />
-                    </button>
+          <input
+            type="text"
+            name="jobTitle"
+            value={formData.jobTitle}
+            onChange={handleChange}
+            placeholder="Job Title"
+            className="w-full p-3 rounded-lg bg-gray-100"
+          />
 
-                    <button
-                    onClick={()=> setIsEditing(false)
-                    }>Save</button>
-                </>
-    ): (
-        <>
-            {data.map((item,index) =>(
-            <div key={index}>
-                <p><strong>{item.jobTitle}</strong></p>
-                <p>{item.company}</p>
-                <p>{item.startDate} - {item.endDate}</p>
-                <p>{item.description}</p>
+          <input
+            type="text"
+            name="company"
+            value={formData.company}
+            onChange={handleChange}
+            placeholder="Company Name"
+            className="w-full p-3 rounded-lg bg-gray-100"
+          />
 
-                <hr style={{ margin : "20px 0"}}/>
-            </div>
-            ))}
+          {/* Dates */}
+          <div className="flex gap-4">
+            <input
+              type="date"
+              name="startDate"
+              value={formData.startDate}
+              onChange={handleChange}
+              className="w-1/2 p-3 rounded-lg bg-gray-100"
+            />
 
-            <button onClick={() => setIsEditing(true)}>Edit</button>
-    
-        </>
-        )}
-        </>
-    )}
+            <input
+              type="date"
+              name="endDate"
+              value={formData.endDate}
+              onChange={handleChange}
+              className="w-1/2 p-3 rounded-lg bg-gray-100"
+            />
+          </div>
+
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            placeholder="Description"
+            className="w-full p-3 rounded-lg bg-gray-100"
+          />
+
+          <button
+            onClick={handleSave}
+            className="bg-pink-500 text-white px-6 py-2 rounded-full hover:bg-pink-600"
+          >
+            {editIndex !== null ? "Update" : "Save"}
+          </button>
         </div>
-        );
-    }
+      )}
+
+      {/* SAVED LIST */}
+      {data.map((item, index) => (
+        <div
+          key={index}
+          className="mt-4 p-4 bg-gray-50 rounded-lg flex justify-between items-start"
+        >
+          <div>
+            <p className="font-semibold text-gray-800">
+              {item.jobTitle}
+            </p>
+            <p className="text-gray-600">{item.company}</p>
+            <p className="text-sm text-gray-500">
+              {item.startDate} - {item.endDate}
+            </p>
+            <p className="text-sm text-gray-500">
+              {item.description}
+            </p>
+          </div>
+
+          <div className="flex gap-3">
+            <button
+              onClick={() => handleEdit(index)}
+              className="text-blue-500 hover:text-blue-700"
+            >
+              <FaEdit />
+            </button>
+
+            <button
+              onClick={() => handleDelete(index)}
+              className="text-red-500 hover:text-red-700"
+            >
+              <FaTrash />
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default Experience;
-
-
-
-// function Experience({setData,data}) {
-
-//     const[companyName,setCompanyName] = useState(data.companyName || "");
-//     const[position,setPosition] = useState(data.position || "");
-//     const[responsibility,setResponsibility] = useState(data.responsibility || "");
-//     const[fromDate,setFromDate] = useState("");
-//     const[toDate,setToDate] = useState("");
-//     const[isEditing,setIsEditing] = useState(true);
-
-//     function handleCompanyName(e){
-//         setCompanyName(e.target.value);
-//     }
-
-//     function handlePosition(e){
-//         setPosition(e.target.value);
-//     }
-
-//     function handleResponsibility(e){
-//         setResponsibility(e.target.value);
-//     }
-
-//     function handleFromDate(e){
-//         setFromDate(e.target.value);
-//     }
-
-//     function handleToDate(e){
-//         setToDate(e.target.value);
-//     }
-
-
-//     return (
-//         <div>
-//         <h1>Experience</h1>
-
-//         {isEditing ? (
-//             <div>
-//                 <label> Company Name</label>
-//                 <input type="text" value={companyName} onChange={handleCompanyName} />
-
-//                 <label>Position</label>
-//                 <input type="text" value={position} onChange={handlePosition} />
-
-//                 <label> Responsibility </label>
-//                 <input type="text" value={responsibility} onChange={handleResponsibility} />
-
-//                 <label> From Date</label>
-//                 <input type="date" value={fromDate} onChange={handleFromDate} />
-
-//                 <label> To Date</label>
-//                 <input type="date" value={toDate} onChange={handleToDate} />
-
-//                 <button onClick={() => {
-//                     setData({companyName,position,responsibility,fromDate,toDate})
-//                     setIsEditing(false)}}>Submit</button>
-                
-//             </div>
-//         ): (
-//             <div>
-//             <p>{companyName}</p>
-//             <p>{position}</p>
-//             <p>{responsibility}</p>
-//             <p>{fromDate}</p>
-//             <p>{toDate}</p>
-
-//             <button onClick={ ()=> setIsEditing(true)}> Edit </button>
-            
-//             </div>
-//         )}
-//         </div>
-//     );
-// }
-
